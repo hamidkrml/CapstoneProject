@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
-//import Firebase
+
 
 struct kayitEkrani: View {
-//@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
+    
+    
     @StateObject var viewModel = LoginViewModel()
     
-    @State private var errorMessage: String? = nil
-
+    
     enum fieldKeybord{
         case KullaniciAdi
         case Sifre
@@ -24,28 +23,25 @@ struct kayitEkrani: View {
             ScrollView{
                 VStack(spacing: 50){
                     
-                    HStack(){
+                    HStack{
                         Image("fitness")
                             .resizable()
                             .frame(width: 100,height: 100)
                             .clipShape(Circle())
                         
-                            .padding()
-                        Text("Hoş Geldiniz")
-                            .font(.largeTitle)
-                            .italic()
-                            .foregroundStyle(.white)
-                            .lineSpacing(15)
-                            .shadow(color:.gray,radius: 2,x: 2,y:2)
+                            
+                        
                     }
                     .maxLeft
-                    .top15
+                    
                     Spacer()
                     VStack(spacing: 60){
+                        
+                        
                         TextField("Kullanci Adin",text: $viewModel.email)
                             .padding()
                             .background(Color.white.opacity(0.2))
-                            .foregroundColor(.red)
+                            .foregroundColor(.white)
                             .cornerRadius(20, corner: .allCorners)
                         
                         
@@ -58,25 +54,34 @@ struct kayitEkrani: View {
                     .padding(.horizontal,20)
                     
                     .padding()
-                  
-                   
                     
-                    Button {Task{ try await viewModel.signIn()}
+                    
+                    
+                    Button{
+                        viewModel.attemptLogin()
                     } label: {
                         Buttongenel(adyaz: "Giris Yap")
                     }
-
+                    
+                    
                     NavigationLink(destination: KayitOl()){
                         Text("Henuz hesapiniz yok mu?")
                             .font(.title2)
                             .underline(true,color: .yellow.opacity(0.5))
                             .lineLimit(1)
                             .foregroundColor(.gray.opacity(0.7))
-                      
+                        
                     }
                 }
             }
-           
+            .scrollDismissesKeyboard(.immediately)
+            .padding(.bottom, 100)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Hoş Geldiniz") // Küçük bir başlık
+                        .font(.title2)
+                }
+            }
             .frame(maxWidth: .infinity,maxHeight: .infinity)
             .background(
                 ExtractedView.shared
@@ -88,10 +93,15 @@ struct kayitEkrani: View {
             
             .scrollDismissesKeyboard(.automatic)
         }
+        .alert("Hata", isPresented: $viewModel.showAlert) {
+            Button("Tamam", role: .cancel) { }
+        } message: {
+            Text(viewModel.alertMessage)
+        }
         
         
     }
-        
+    
 }
 
 #Preview {
