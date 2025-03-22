@@ -26,7 +26,7 @@ class LoginFirbase{
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
             self.user1 = result.user
         }catch{
-//            let hata = Text("Kullanci adiniz Veya sifreniz yanlisdir\(error.localizedDescription)")
+            throw error
         }
         
     }
@@ -37,7 +37,7 @@ class LoginFirbase{
             self.user1 = resut.user
             await uploadUserData(uid: resut.user.uid,Kboyu: Kboyu,Kceki: Kceki,Kad: Kad,Ksoyad: Ksoyad)
         }catch{
-            print("hata\(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -52,7 +52,9 @@ class LoginFirbase{
     func signout(){
         /// firbase kullanci adindan dusecek
         try? Auth.auth().signOut()
-        self.user1 = nil
+        DispatchQueue.main.async {
+            self.user1 = nil
+        }
     }
     
     
