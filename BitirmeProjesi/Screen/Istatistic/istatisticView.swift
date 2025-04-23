@@ -2,39 +2,62 @@ import SwiftUI
 import SwiftData
 
 struct istatisticView: View {
-   
+    
     @Query var records: [SporData]
-    @State private var sheetShown = false
-    var body: some View {
+    @State private var level1 = false
+    @State private var level2 = false
+    @State private var level3 = false
 
+    
+    var body: some View {
+        
         NavigationStack {
             ScrollView {
                 LazyVStack {
                     SporChartView()
-
+                    
                     Text("Aşamalar")
                         .font(.customfont(font: .Bold, fontSize: 25))
                         .foregroundColor(.white)
+                    
+                    Divider()
                     Button{
-                        sheetShown = true
+                        level1 = true
                     }label: {
-                        productCard(image: "yemek", title: "level1")
-                    }.sheet(isPresented: $sheetShown) {
-                        Level1View(MaxValue: 15.0, safaIsmi: "level1")
+                        productCard(image: "images1", title: "level1")
+                    }.sheet(isPresented: $level1) {
+                        LevelView(MaxValue: 10.0, safaIsmi: "level1")
                             .presentationDetents([.medium])
                     }
-                   
-                } 
-                .navigationTitle("Level")
+                    
+                    Button{
+                        level2 = true
+                    }label: {
+                        productCard(image: "images2", title: "level2")
+                    }.sheet(isPresented: $level2) {
+                        LevelView(MaxValue: 20.0, safaIsmi: "level2")
+                            .presentationDetents([.medium])
+                    }
+                    Button{
+                        level3 = true
+                    }label: {
+                        productCard(image: "images3", title: "level3")
+                    }.sheet(isPresented: $level3) {
+                        LevelView(MaxValue: 30.0, safaIsmi: "level3")
+                            .presentationDetents([.medium])
+                    }
+
+                    
+                }
                 
-                .background (ExtractedView.shared)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea(.all, edges: .all)
-                .preferredColorScheme(.dark)
             }
+            .navigationTitle("Level")
+            
+            .background (ExtractedView.shared)
+           
+            
+            .preferredColorScheme(.dark)
             
         }
     }
-    
-    
 }
