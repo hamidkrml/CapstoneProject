@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-struct Level1View: View {
+struct LevelView: View {
     init(MaxValue: Double,safaIsmi:String) {
         self.MaxValue = MaxValue
         self.sayfaIsmi = safaIsmi
@@ -43,5 +43,5 @@ struct Level1View: View {
 }
 
 #Preview {
-    Level1View(MaxValue: 10.0, safaIsmi: "Level1")
+    LevelView(MaxValue: 10.0, safaIsmi: "Level1")
 }
