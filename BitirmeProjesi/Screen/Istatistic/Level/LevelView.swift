@@ -9,10 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct LevelView: View {
-    init(MaxValue: Double,safaIsmi:String,levelaciklamasi:String) {
+    init(MaxValue: Double,safaIsmi:String,levelaciklamasi:String,records: [SporData]) {
         self.MaxValue = MaxValue
         self.sayfaIsmi = safaIsmi
         self.levelaciklamsi = levelaciklamasi
+        _exerciseManager = StateObject(wrappedValue: ExerciseTotalsManager(records: records))
     }
     @Query private var records: [SporData]
     
@@ -20,16 +21,8 @@ struct LevelView: View {
     private var levelaciklamsi: String
 
     private var sayfaIsmi : String
-    var exerciseTotals: [(exercise: String, total: Int)] {
-        [
-            ("Squat", records.reduce(0) { $0 + ($1.squat1 ?? 0) }),
-            ("Biceps", records.reduce(0) { $0 + ($1.biceps ?? 0) }),
-            ("Lunge Sol", records.reduce(0) { $0 + ($1.lungeSol ?? 0) }),
-            ("Lunge Sag", records.reduce(0) { $0 + ($1.lungeSag ?? 0) }),
-            ("Press", records.reduce(0) { $0 + ($1.press ?? 0) }),
-            ("Standing", records.reduce(0) { $0 + ($1.standing ?? 0) })
-        ]
-    }
+    @StateObject private var exerciseManager: ExerciseTotalsManager
+
     var body: some View {
         NavigationStack{
             ScrollView {
@@ -38,7 +31,7 @@ struct LevelView: View {
                     Text(levelaciklamsi)
                         .font(.footnote)
                         .fontWeight(.semibold)
-                    ForEach(exerciseTotals ,id: \.exercise){data in
+                    ForEach(exerciseManager.exerciseTotals ,id: \.exercise){data in
                         LevelViewModel(current: data.total, sporadi:data.exercise, MaxValue: MaxValue, levelaciklamsi: "")
                         
                     }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+    @State private var records: [SporData] = []
     var body: some View {
         
         VStack{
@@ -22,7 +22,7 @@ struct ContentView: View {
                     }
                 
                 
-                istatisticView()
+                istatisticView(records: records)
                     .tabItem {
                         Label("Level", systemImage: "slider.horizontal.2.arrow.trianglehead.counterclockwise")
                             .foregroundColor(.white)
