@@ -11,30 +11,38 @@ struct LevelViewModel: View {
     // MARK: - Initializer
        /// View'a dışarıdan `current` (mevcut seviye) ve `sporadi` (spor adı) gönderilir.
        /// Bu değerler `@State` olarak tanımlanır çünkü view içinde değişebilir olmaları istenir.
-    init(current: Int, sporadi : String,MaxValue:Double) {
+    init(current: Int, sporadi : String,MaxValue:Double,levelaciklamsi:String) {
         _current = State(initialValue: current)
         _sporadi = State(initialValue: sporadi)
         _maxValue = State(initialValue: MaxValue)
+        _levelAciklamasi = State(initialValue: levelaciklamsi)
     }
     
     @State private var minValue = 0.0
     @State private var maxValue :Double
     @State private var current: Int
     @State private var sporadi : String
+    @State private var levelAciklamasi :String
 
     var body: some View {
-        HStack{
-            Rectangle()
-                .frame(height: 0.6)
-            Text(sporadi)
+
+        VStack {
+            Text(levelAciklamasi)
                 .font(.footnote)
                 .fontWeight(.semibold)
-            Rectangle()
-                .frame(height: 0.6)
-            Spacer()
-            circularCapacityGaugeColorful1
-            Rectangle()
-                .frame(height: 0.6)
+            HStack{
+                Rectangle()
+                    .frame(height: 0.6)
+                Text(sporadi)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+                Rectangle()
+                    .frame(height: 0.6)
+                Spacer()
+                circularCapacityGaugeColorful1
+                Rectangle()
+                    .frame(height: 0.6)
+            }
         }
     }
     // MARK: - Gauge View
@@ -58,6 +66,6 @@ struct LevelViewModel: View {
     }
 }
 
-#Preview {
-    LevelViewModel(current: 13, sporadi: "squat", MaxValue: 10.0)
-}
+//#Preview {
+//    LevelViewModel(current: 13, sporadi: "squat", MaxValue: 10.0)
+//}

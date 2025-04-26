@@ -9,27 +9,36 @@ import SwiftUI
 import SwiftData
 
 struct LevelView: View {
-    init(MaxValue: Double,safaIsmi:String) {
+    init(MaxValue: Double,safaIsmi:String,levelaciklamasi:String) {
         self.MaxValue = MaxValue
         self.sayfaIsmi = safaIsmi
+        self.levelaciklamsi = levelaciklamasi
     }
     @Query private var records: [SporData]
-    private var MaxValue: Double
-    private var sayfaIsmi : String
     
+    private var MaxValue: Double
+    private var levelaciklamsi: String
+
+    private var sayfaIsmi : String
+    var exerciseTotals: [(exercise: String, total: Int)] {
+        [
+            ("Squat", records.reduce(0) { $0 + ($1.squat1 ?? 0) }),
+            ("Biceps", records.reduce(0) { $0 + ($1.biceps ?? 0) }),
+            ("Lunge Sol", records.reduce(0) { $0 + ($1.lungeSol ?? 0) }),
+            ("Lunge Sag", records.reduce(0) { $0 + ($1.lungeSag ?? 0) }),
+            ("Press", records.reduce(0) { $0 + ($1.press ?? 0) }),
+            ("Standing", records.reduce(0) { $0 + ($1.standing ?? 0) })
+        ]
+    }
     var body: some View {
         NavigationStack{
             ScrollView {
                 VStack(spacing: 5){
                     Spacer().frame(height: 30)
                     
-                    ForEach(records){data in
-                        LevelViewModel(current: data.squat1 ?? 0, sporadi: "Squat", MaxValue: MaxValue)
-                        LevelViewModel(current: data.biceps ?? 0, sporadi: "Biceps", MaxValue: MaxValue)
-                        LevelViewModel(current: data.standing ?? 0, sporadi: "Lateral", MaxValue: MaxValue)
-                        LevelViewModel(current: data.press ?? 0, sporadi: "Dumbell", MaxValue: MaxValue)
-                        LevelViewModel(current: data.lungeSag ?? 0, sporadi: "LungSag", MaxValue: MaxValue)
-                        LevelViewModel(current: data.lungeSol ?? 0, sporadi: "LungSol", MaxValue: MaxValue)
+                    ForEach(exerciseTotals ,id: \.exercise){data in
+                        LevelViewModel(current: data.total, sporadi:data.exercise, MaxValue: MaxValue, levelaciklamsi: levelaciklamsi)
+                        
                     }
                     
                 }   .padding()
@@ -46,6 +55,6 @@ struct LevelView: View {
     }
 }
 
-#Preview {
-    LevelView(MaxValue: 10.0, safaIsmi: "Level1")
-}
+//#Preview {
+//    LevelView(MaxValue: 10.0, safaIsmi: "Level1")
+//}
