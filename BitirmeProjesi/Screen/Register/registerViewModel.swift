@@ -9,7 +9,7 @@ import Foundation
 
 class registerViewModel :ObservableObject{
     
-    @Published var ad:String = ""
+    @Published var ad   :String = ""
     @Published var soyad:String = ""
     @Published var Sifre:String = ""
     @Published var gmail:String = ""

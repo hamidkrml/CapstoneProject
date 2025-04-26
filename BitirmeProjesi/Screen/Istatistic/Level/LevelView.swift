@@ -6,27 +6,31 @@
 //
 
 import SwiftUI
-
+import SwiftData
 
 struct LevelView: View {
     init(MaxValue: Double,safaIsmi:String) {
         self.MaxValue = MaxValue
         self.sayfaIsmi = safaIsmi
     }
-    
+    @Query private var records: [SporData]
     private var MaxValue: Double
     private var sayfaIsmi : String
+    
     var body: some View {
         NavigationStack{
             ScrollView {
                 VStack(spacing: 5){
                     Spacer().frame(height: 30)
-                    LevelViewModel(current: 12, sporadi: "Squat", MaxValue: MaxValue)
-                    LevelViewModel(current: 12, sporadi: "Biceps", MaxValue: MaxValue)
-                    LevelViewModel(current: 12, sporadi: "Lateral", MaxValue: MaxValue)
-                    LevelViewModel(current: 12, sporadi: "Dumbell", MaxValue: MaxValue)
-                    LevelViewModel(current: 12, sporadi: "LungSag", MaxValue: MaxValue)
-                    LevelViewModel(current: 12, sporadi: "LungSol", MaxValue: MaxValue)
+                    
+                    ForEach(records){data in
+                        LevelViewModel(current: data.squat1 ?? 0, sporadi: "Squat", MaxValue: MaxValue)
+                        LevelViewModel(current: data.biceps ?? 0, sporadi: "Biceps", MaxValue: MaxValue)
+                        LevelViewModel(current: data.standing ?? 0, sporadi: "Lateral", MaxValue: MaxValue)
+                        LevelViewModel(current: data.press ?? 0, sporadi: "Dumbell", MaxValue: MaxValue)
+                        LevelViewModel(current: data.lungeSag ?? 0, sporadi: "LungSag", MaxValue: MaxValue)
+                        LevelViewModel(current: data.lungeSol ?? 0, sporadi: "LungSol", MaxValue: MaxValue)
+                    }
                     
                 }   .padding()
                     

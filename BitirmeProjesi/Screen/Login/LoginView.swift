@@ -22,18 +22,12 @@ struct kayitEkrani: View {
         NavigationStack {
             ScrollView{
                 VStack(spacing: 50){
-                    
-                    HStack{
-                        Image("fitness")
+ 
+                    Image("fitness")
                             .resizable()
                             .frame(width: 100,height: 100)
                             .clipShape(Circle())
-                        
-                            
-                        
-                    }
-                    .maxLeft
-                    
+ 
                     Spacer()
                     VStack(spacing: 60){
                         
@@ -78,7 +72,7 @@ struct kayitEkrani: View {
             .padding(.bottom, 100)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Hoş Geldiniz") // Küçük bir başlık
+                    Text("Hoş Geldiniz")
                         .font(.title2)
                 }
             }

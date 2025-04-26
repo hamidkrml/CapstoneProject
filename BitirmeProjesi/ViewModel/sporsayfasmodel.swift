@@ -25,14 +25,6 @@ enum DetailPage{
 }
 
 
-
-
-
-
-
-
-
-
 func getDetailView(for page: DetailPage) -> AnyView {
     switch page {
     case .squat:
