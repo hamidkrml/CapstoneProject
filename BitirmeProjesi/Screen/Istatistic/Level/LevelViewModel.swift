@@ -27,9 +27,11 @@ struct LevelViewModel: View {
     var body: some View {
 
         VStack {
-            Text(levelAciklamasi)
-                .font(.footnote)
-                .fontWeight(.semibold)
+            if !levelAciklamasi.isEmpty {
+                Text(levelAciklamasi)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+            }
             HStack{
                 Rectangle()
                     .frame(height: 0.6)

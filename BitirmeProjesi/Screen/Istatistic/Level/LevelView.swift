@@ -35,9 +35,11 @@ struct LevelView: View {
             ScrollView {
                 VStack(spacing: 5){
                     Spacer().frame(height: 30)
-                    
+                    Text(levelaciklamsi)
+                        .font(.footnote)
+                        .fontWeight(.semibold)
                     ForEach(exerciseTotals ,id: \.exercise){data in
-                        LevelViewModel(current: data.total, sporadi:data.exercise, MaxValue: MaxValue, levelaciklamsi: levelaciklamsi)
+                        LevelViewModel(current: data.total, sporadi:data.exercise, MaxValue: MaxValue, levelaciklamsi: "")
                         
                     }
                     
