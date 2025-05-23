@@ -14,7 +14,7 @@ struct ContentView: View {
                             .opacity(0.8)
                     }
                 
-                    Diyet()
+                DiyetView()
                     .tabItem {
                         Label("Diyet", systemImage: "heart.text.clipboard.fill")
                             .foregroundColor(.white)
