@@ -10,19 +10,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     return true
   }
 }
+
 @main
 struct BitirmeProjesiApp: App {
-    
-    let modelContainer = try! ModelContainer(for: SporData.self)
+    let modelContainer = try! ModelContainer(for: SporData.self, KullanciBilgileri.self)
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 GirisVeyaAtla()
             }
-            // modelContext'i view environment'ına ekliyoruz.
             .modelContext(modelContainer.mainContext)
-            .environmentObject(registerViewModel())
+            .environmentObject(registerViewModel(modelContext: modelContainer.mainContext))
         }
     }
 }
