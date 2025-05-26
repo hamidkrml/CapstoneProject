@@ -7,103 +7,130 @@
 
 import SwiftUI
 
-
 struct kayitEkrani: View {
-    
-    
     @StateObject var viewModel = LoginViewModel()
+    @FocusState private var focusedField: Field?
     
-    
-    enum fieldKeybord{
-        case KullaniciAdi
-        case Sifre
+    enum Field {
+        case email, password
     }
+    
     var body: some View {
         NavigationStack {
-            ScrollView{
-                VStack(spacing: 50){
- 
-                    Image("fitness")
+            ZStack {
+                ExtractedView.shared
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 50) {
+                        Image("fitness")
                             .resizable()
-                            .frame(width: 100,height: 100)
+                            .frame(width: 100, height: 100)
                             .clipShape(Circle())
- 
-                    Spacer()
-                    VStack(spacing: 60){
+                            .shadow(color: .gray.opacity(0.3), radius: 10, x: 0, y: 5)
                         
+                        VStack(spacing: 25) {
+                            TextField("E-posta", text: $viewModel.email)
+                                .textContentType(.emailAddress)
+                                .keyboardType(.emailAddress)
+                                .autocapitalization(.none)
+                                .focused($focusedField, equals: .email)
+                                .submitLabel(.next)
+                                .padding()
+                                .background(Color.white.opacity(0.2))
+                                .foregroundColor(.white)
+                                .cornerRadius(20)
+                            
+                            SecureField("Şifre", text: $viewModel.password)
+                                .textContentType(.password)
+                                .focused($focusedField, equals: .password)
+                                .submitLabel(.done)
+                                .padding()
+                                .background(Color.white.opacity(0.2))
+                                .foregroundColor(.white)
+                                .cornerRadius(20)
+                        }
+                        .padding(.horizontal, 20)
                         
-                        TextField("Kullanci Adin",text: $viewModel.email)
-                            .padding()
-                            .background(Color.white.opacity(0.2))
-                            .foregroundColor(.white)
-                            .cornerRadius(20, corner: .allCorners)
+                        Button {
+                            focusedField = nil
+                            viewModel.attemptLogin()
+                        } label: {
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background(Color.yellow.opacity(0.8))
+                                    .cornerRadius(25)
+                            } else {
+                                Text("Giriş Yap")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [Color.yellow, Color.yellow.opacity(0.8)]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .cornerRadius(25)
+                                    .shadow(color: .yellow.opacity(0.3), radius: 5, x: 0, y: 3)
+                            }
+                        }
+                        .disabled(viewModel.isLoading)
+                        .padding(.horizontal, 20)
                         
-                        
-                        SecureField("Şifrenizi Giriniz", text: $viewModel.password)
-                            .padding()
-                            .background(Color.white.opacity(0.2))
-                            .cornerRadius(20, corner: .allCorners)
-                            .foregroundColor(.black)
+                        NavigationLink(destination: KayitOl()) {
+                            HStack {
+                                Text("Henüz hesabınız yok mu?")
+                                    .foregroundColor(.gray)
+                                Text("Kayıt Ol")
+                                    .foregroundColor(.yellow.opacity(0.6))
+                                    .fontWeight(.semibold)
+                            }
+                            .padding(.vertical, 10)
+                        }
                     }
-                    .padding(.horizontal,20)
-                    
-                    .padding()
-                    
-                    
-                    
-                    Button{
-                        viewModel.attemptLogin()
-                    } label: {
-                        Buttongenel(adyaz: "Giris Yap")
-                    }
-                    
-                    
-                    NavigationLink(destination: KayitOl()){
-                        Text("Henuz hesapiniz yok mu?")
-                            .font(.title2)
-                            .underline(true,color: .yellow.opacity(0.5))
-                            .lineLimit(1)
-                            .foregroundColor(.gray.opacity(0.7))
-                        
-                    }
+                    .padding(.vertical, 50)
                 }
+                .padding(.bottom, 30) // Klavye için ekstra boşluk
             }
-            .scrollDismissesKeyboard(.immediately)
-            .padding(.bottom, 100)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Hoş Geldiniz")
                         .font(.title2)
+                        .foregroundColor(.white)
                 }
             }
-            .frame(maxWidth: .infinity,maxHeight: .infinity)
-            .background(
-                ExtractedView.shared
-            )
-            .preferredColorScheme(.dark)
-            
-            
-            
-            
-            .scrollDismissesKeyboard(.automatic)
+            .onSubmit {
+                switch focusedField {
+                case .email:
+                    focusedField = .password
+                case .password:
+                    focusedField = nil
+                    viewModel.attemptLogin()
+                case .none:
+                    break
+                }
+            }
+            .onTapGesture {
+                focusedField = nil
+            }
         }
         .alert("Hata", isPresented: $viewModel.showAlert) {
             Button("Tamam", role: .cancel) { }
         } message: {
             Text(viewModel.alertMessage)
         }
-        
-        
     }
-    
 }
 
 #Preview {
-    NavigationView{
-        kayitEkrani()
-        
-    }
-    
+    kayitEkrani()
 }
 
 
