@@ -121,6 +121,7 @@ struct kayitEkrani: View {
                 focusedField = nil
             }
         }
+        .navigationBarBackButtonHidden()
         .alert("Hata", isPresented: $viewModel.showAlert) {
             Button("Tamam", role: .cancel) { }
         } message: {

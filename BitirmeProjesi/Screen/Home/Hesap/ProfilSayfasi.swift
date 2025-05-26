@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ProfilSayfasi: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var kullanicilar: [KullanciBilgileri]
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -25,17 +29,18 @@ struct ProfilSayfasi: View {
                         .padding(.trailing,9)
                     }
                     
-                    HStack(spacing: 30){
-                        
-                        Text("Ad\n\("Hamit")")
-                            .padding()
-                        Text("SoyAd\n\("Karimli")")
-                            .padding()
-                        Text("Boy\n\("179")")
-                            .padding()
-                        Text("Ceki\n\("69")")
-                            .padding()
-                    }.maxLeft
+                    if let kullanici = kullanicilar.first {
+                        HStack(spacing: 30){
+                            Text("Ad\n\(kullanici.ad)")
+                                .padding()
+                            Text("SoyAd\n\(kullanici.soyad)")
+                                .padding()
+                            Text("Boy\n\(kullanici.boy)")
+                                .padding()
+                            Text("Ceki\n\(kullanici.ceki)")
+                                .padding()
+                        }
+                        .maxLeft
                         .padding()
                         .font(.customfont(font: .light, fontSize: 14))
                         .italic()
@@ -44,7 +49,29 @@ struct ProfilSayfasi: View {
                         .shadow(color:.gray,radius: 2,x: 2,y:2)
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(22, corner: .allCorners)
-                    
+                        
+                        HStack(spacing: 30){
+                            Text("Yaş\n\(kullanici.yas)")
+                                .padding()
+                            Text("Cinsiyet\n\(kullanici.cinsiyet)")
+                                .padding()
+                            Text("Email\n\(kullanici.email)")
+                                .padding()
+                        }
+                        .maxLeft
+                        .padding()
+                        .font(.customfont(font: .light, fontSize: 14))
+                        .italic()
+                        .foregroundStyle(.white)
+                        .lineSpacing(15)
+                        .shadow(color:.gray,radius: 2,x: 2,y:2)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(22, corner: .allCorners)
+                    } else {
+                        Text("Kullanıcı bilgileri bulunamadı")
+                            .foregroundColor(.white)
+                            .padding()
+                    }
                     
                     Divider()
                     
@@ -53,13 +80,16 @@ struct ProfilSayfasi: View {
                     }
                     Spacer()
                 }
-            }.background(
+            }
+            .background(
                 ExtractedView.shared
             )
             .preferredColorScheme(.dark)
         }
     }
 }
+
 #Preview {
     ProfilSayfasi()
+        .modelContainer(for: KullanciBilgileri.self)
 }

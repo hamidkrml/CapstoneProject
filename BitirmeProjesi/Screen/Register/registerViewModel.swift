@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 @MainActor
 class registerViewModel: ObservableObject {
@@ -16,12 +17,21 @@ class registerViewModel: ObservableObject {
     @Published var gmail: String = ""
     @Published var boy: String = ""
     @Published var ceki: String = ""
-    
+    @Published var yas: String = ""
+    @Published var cinsiyet: String = "Erkek"
     @Published var errorMessage: String = ""
     @Published var isLoading: Bool = false
     
+    let cinsiyetSecenekleri = ["Erkek", "Kadın"]
+    let modelContext: ModelContext
+    
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+    
     var isValid: Bool {
-        !ad.isEmpty && !soyad.isEmpty && !Sifre.isEmpty && !gmail.isEmpty && !boy.isEmpty && !ceki.isEmpty
+        !ad.isEmpty && !soyad.isEmpty && !Sifre.isEmpty && !gmail.isEmpty && 
+        !boy.isEmpty && !ceki.isEmpty && !yas.isEmpty && !cinsiyet.isEmpty
     }
     
     func validateEmail() -> Bool {
@@ -42,6 +52,11 @@ class registerViewModel: ObservableObject {
     func validateWeight() -> Bool {
         guard let weight = Double(ceki) else { return false }
         return weight > 0 && weight < 500
+    }
+    
+    func validateAge() -> Bool {
+        guard let age = Int(yas) else { return false }
+        return age > 0 && age < 120
     }
     
     func CreateUser() {
@@ -70,11 +85,17 @@ class registerViewModel: ObservableObject {
             return
         }
         
+        guard validateAge() else {
+            errorMessage = "Geçerli bir yaş değeri giriniz"
+            return
+        }
+        
         isLoading = true
         errorMessage = ""
         
         Task { @MainActor in
             do {
+                // Firebase'e kayıt
                 try await LoginFirbase.shared.createUser(
                     email: gmail,
                     password: Sifre,
@@ -83,10 +104,26 @@ class registerViewModel: ObservableObject {
                     Kad: ad,
                     Ksoyad: soyad
                 )
+                
+                // SwiftData'ya kayıt
+                let kullaniciBilgileri = KullanciBilgileri(
+                    ad: ad,
+                    soyad: soyad,
+                    boy: boy,
+                    ceki: ceki,
+                    yas: yas,
+                    cinsiyet: cinsiyet,
+                    email: gmail
+                )
+                modelContext.insert(kullaniciBilgileri)
+                try modelContext.save()
+                
             } catch {
                 errorMessage = error.localizedDescription
             }
             isLoading = false
         }
     }
+    
+    
 }
