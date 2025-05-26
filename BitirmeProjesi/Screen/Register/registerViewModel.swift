@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class registerViewModel: ObservableObject {
     @Published var ad: String = ""
     @Published var soyad: String = ""
@@ -43,7 +44,7 @@ class registerViewModel: ObservableObject {
         return weight > 0 && weight < 500
     }
     
-    func CreateUser() async throws {
+    func CreateUser() {
         guard isValid else {
             errorMessage = "Lütfen tüm alanları doldurun"
             return
@@ -72,19 +73,20 @@ class registerViewModel: ObservableObject {
         isLoading = true
         errorMessage = ""
         
-        do {
-            try await LoginFirbase.shared.createUser(
-                email: gmail,
-                password: Sifre,
-                Kboyu: boy,
-                Kceki: ceki,
-                Kad: ad,
-                Ksoyad: soyad
-            )
-        } catch {
-            errorMessage = error.localizedDescription
+        Task { @MainActor in
+            do {
+                try await LoginFirbase.shared.createUser(
+                    email: gmail,
+                    password: Sifre,
+                    Kboyu: boy,
+                    Kceki: ceki,
+                    Kad: ad,
+                    Ksoyad: soyad
+                )
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isLoading = false
         }
-        
-        isLoading = false
     }
 }
