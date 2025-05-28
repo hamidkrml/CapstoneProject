@@ -13,7 +13,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct BitirmeProjesiApp: App {
-    let modelContainer = try! ModelContainer(for: SporData.self, KullanciBilgileri.self)
+    let modelContainer: ModelContainer
+    
+    init() {
+        do {
+            modelContainer = try ModelContainer(for: Food.self)
+            // Load food data when app starts
+            FoodDataManager.shared.loadFoodData(modelContext: modelContainer.mainContext)
+        } catch {
+            fatalError("Could not initialize ModelContainer: \(error)")
+        }
+    }
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
@@ -24,5 +35,6 @@ struct BitirmeProjesiApp: App {
             .modelContext(modelContainer.mainContext)
             .environmentObject(registerViewModel(modelContext: modelContainer.mainContext))
         }
+        .modelContainer(modelContainer)
     }
 }
