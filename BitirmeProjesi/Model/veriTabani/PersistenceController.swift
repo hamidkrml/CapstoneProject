@@ -39,4 +39,6 @@ struct verikayit {
             print("Hata: Veri kaydedilemedi! \(error.localizedDescription)")
         }
     }
+    
+    
 }
