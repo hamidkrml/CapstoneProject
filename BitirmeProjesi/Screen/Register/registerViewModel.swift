@@ -30,7 +30,7 @@ class registerViewModel: ObservableObject {
     }
     
     var isValid: Bool {
-        !ad.isEmpty && !soyad.isEmpty && !Sifre.isEmpty && !gmail.isEmpty && 
+        !ad.isEmpty && !soyad.isEmpty && !Sifre.isEmpty && !gmail.isEmpty &&
         !boy.isEmpty && !ceki.isEmpty && !yas.isEmpty && !cinsiyet.isEmpty
     }
     
@@ -57,6 +57,24 @@ class registerViewModel: ObservableObject {
     func validateAge() -> Bool {
         guard let age = Int(yas) else { return false }
         return age > 0 && age < 120
+    }
+    
+    func calculateBMI(weight: String, height: String) -> String {
+        guard let w = Double(weight), let h = Double(height) else { return "N/A" }
+        let heightInMeters = h / 100
+        let bmi = w / (heightInMeters * heightInMeters)
+        return String(format: "%.1f", bmi)
+    }
+
+    func calculateDailyCalorieNeed(weight: String, height: String, age: String, gender: String) -> String {
+        guard let w = Double(weight), let h = Double(height), let a = Double(age) else { return "N/A" }
+        let bmr: Double
+        if gender == "Erkek" {
+            bmr = 10 * w + 6.25 * h - 5 * a + 5
+        } else {
+            bmr = 10 * w + 6.25 * h - 5 * a - 161
+        }
+        return String(format: "%.0f", bmr)
     }
     
     func CreateUser() {
@@ -105,6 +123,10 @@ class registerViewModel: ObservableObject {
                     Ksoyad: soyad
                 )
                 
+                // BMI ve günlük kalori ihtiyacını hesapla
+                let bmiValue = calculateBMI(weight: ceki, height: boy)
+                let dailyCalorie = calculateDailyCalorieNeed(weight: ceki, height: boy, age: yas, gender: cinsiyet)
+                
                 // SwiftData'ya kayıt
                 let kullaniciBilgileri = KullanciBilgileri(
                     ad: ad,
@@ -115,11 +137,30 @@ class registerViewModel: ObservableObject {
                     cinsiyet: cinsiyet,
                     email: gmail
                 )
+                
+                // Hesaplanan değerleri kaydet
+                kullaniciBilgileri.bmi = bmiValue
+                kullaniciBilgileri.dailyCalorieNeed = dailyCalorie
+                
+                // Önceki kullanıcı bilgilerini temizle
+                let descriptor = FetchDescriptor<KullanciBilgileri>()
+                if let existingUsers = try? modelContext.fetch(descriptor) {
+                    for user in existingUsers {
+                        modelContext.delete(user)
+                    }
+                }
+                
+                // Yeni kullanıcı bilgilerini kaydet
                 modelContext.insert(kullaniciBilgileri)
                 try modelContext.save()
                 
+                print("Kullanıcı bilgileri başarıyla kaydedildi:")
+                print("BMI: \(bmiValue)")
+                print("Günlük Kalori İhtiyacı: \(dailyCalorie)")
+                
             } catch {
                 errorMessage = error.localizedDescription
+                print("Kayıt hatası: \(error.localizedDescription)")
             }
             isLoading = false
         }
