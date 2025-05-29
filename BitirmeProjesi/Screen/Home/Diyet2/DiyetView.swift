@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct DiyetView2: View {
+    @Environment(\.modelContext) private var modelContext
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -64,8 +66,7 @@ struct DiyetView2: View {
     /// Creates a navigation section for a meal
     private func mealNavigationSection(title: String, image: String) -> some View {
         NavigationLink {
-            
-                
+            SearchView(viewModel: SearchViewModel(modelContext: modelContext))
         } label: {
             DiyetCard(image: image, title: title)
         }

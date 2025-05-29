@@ -10,7 +10,8 @@ import SwiftData
 
 struct ProfilSayfasi: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var kullanicilar: [KullanciBilgileri]
+    @Query(sort: \KullanciBilgileri.email) private var kullanicilar: [KullanciBilgileri]
+    @State private var showingLogoutAlert = false
     
     var body: some View {
         NavigationStack {
@@ -20,9 +21,9 @@ struct ProfilSayfasi: View {
                         ProfileView()
                             .maxLeft
                         Button {
-                            LoginFirbase.shared.signout()
+                            showingLogoutAlert = true
                         } label: {
-                            Text("Cıkış Yap")
+                            Text("Çıkış Yap")
                                 .foregroundColor(.white)
                                 .font(.customfont(font: .Bold, fontSize: 12))
                         }
@@ -30,43 +31,41 @@ struct ProfilSayfasi: View {
                     }
                     
                     if let kullanici = kullanicilar.first {
-                        HStack(spacing: 30){
-                            Text("Ad\n\(kullanici.ad)")
-                                .padding()
-                            Text("SoyAd\n\(kullanici.soyad)")
-                                .padding()
-                            Text("Boy\n\(kullanici.boy)")
-                                .padding()
-                            Text("Ceki\n\(kullanici.ceki)")
-                                .padding()
-                        }
-                        .maxLeft
-                        .padding()
-                        .font(.customfont(font: .light, fontSize: 14))
-                        .italic()
-                        .foregroundStyle(.white)
-                        .lineSpacing(15)
-                        .shadow(color:.gray,radius: 2,x: 2,y:2)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(22, corner: .allCorners)
                         
-                        HStack(spacing: 30){
-                            Text("Yaş\n\(kullanici.yas)")
-                                .padding()
-                            Text("Cinsiyet\n\(kullanici.cinsiyet)")
-                                .padding()
-                            Text("Email\n\(kullanici.email)")
-                                .padding()
-                        }
-                        .maxLeft
-                        .padding()
-                        .font(.customfont(font: .light, fontSize: 14))
-                        .italic()
-                        .foregroundStyle(.white)
-                        .lineSpacing(15)
-                        .shadow(color:.gray,radius: 2,x: 2,y:2)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(22, corner: .allCorners)
+                            HStack(spacing: 30){
+                                Text("Ad\n\(kullanici.ad)")
+                                    .padding()
+                                Text("SoyAd\n\(kullanici.soyad)")
+                                    .padding()
+                                Text("Boy\n\(kullanici.boy)")
+                                    .padding()
+                                Text("Kilo\n\(kullanici.ceki)")
+                                    .padding()
+                                Text("Yaş\n\(kullanici.yas)")
+                                    .padding()
+                                Text("Cinsiyet\n\(kullanici.cinsiyet)")
+                            }
+                            .maxLeft
+                            .padding()
+                            .font(.customfont(font: .light, fontSize: 14))
+                            .italic()
+                            .foregroundStyle(.white)
+                            .lineSpacing(15)
+                            .shadow(color:.gray,radius: 2,x: 2,y:2)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(22, corner: .allCorners)
+                            
+                          
+//                            .maxLeft
+//                            .padding()
+//                            .font(.customfont(font: .light, fontSize: 14))
+//                            .italic()
+//                            .foregroundStyle(.white)
+//                            .lineSpacing(15)
+//                            .shadow(color:.gray,radius: 2,x: 2,y:2)
+//                            .background(Color.gray.opacity(0.2))
+//                            .cornerRadius(22, corner: .allCorners)
+                        
                     } else {
                         Text("Kullanıcı bilgileri bulunamadı")
                             .foregroundColor(.white)
@@ -85,6 +84,20 @@ struct ProfilSayfasi: View {
                 ExtractedView.shared
             )
             .preferredColorScheme(.dark)
+            .alert("Çıkış Yap", isPresented: $showingLogoutAlert) {
+                Button("İptal", role: .cancel) { }
+                Button("Çıkış Yap", role: .destructive) {
+                    // SwiftData'dan kullanıcı bilgilerini sil
+                    if let kullanici = kullanicilar.first {
+                        modelContext.delete(kullanici)
+                        try? modelContext.save()
+                    }
+                    // Firebase'den çıkış yap
+                    LoginFirbase.shared.signout()
+                }
+            } message: {
+                Text("Çıkış yapmak istediğinizden emin misiniz?")
+            }
         }
     }
 }
