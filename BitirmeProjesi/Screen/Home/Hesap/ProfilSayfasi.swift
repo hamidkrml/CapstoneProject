@@ -12,7 +12,7 @@ struct ProfilSayfasi: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \KullanciBilgileri.email) private var kullanicilar: [KullanciBilgileri]
     @State private var showingLogoutAlert = false
-    
+    @State private var ViewModel = ProfileViewModel()
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -31,41 +31,35 @@ struct ProfilSayfasi: View {
                     }
                     
                     if let kullanici = kullanicilar.first {
-                        
-                            HStack(spacing: 30){
-                                Text("Ad\n\(kullanici.ad)")
-                                    .padding()
-                                Text("SoyAd\n\(kullanici.soyad)")
-                                    .padding()
-                                Text("Boy\n\(kullanici.boy)")
-                                    .padding()
-                                Text("Kilo\n\(kullanici.ceki)")
-                                    .padding()
-                                Text("Yaş\n\(kullanici.yas)")
-                                    .padding()
-                                Text("Cinsiyet\n\(kullanici.cinsiyet)")
+                        let bilgiler: [(String, String)] = [
+                            ("Ad", kullanici.ad),
+                            ("Soyad", kullanici.soyad),
+                            ("Boy", kullanici.boy),
+                            ("Kilo", kullanici.ceki),
+                            ("Yaş", kullanici.yas),
+                            ("Cinsiyet", kullanici.cinsiyet)
+                        ]
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                            ForEach(bilgiler, id: \.0) { title, value in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(title)
+                                        .font(.customfont(font: .medium, fontSize: 12))
+                                        .foregroundColor(.gray)
+                                    Text(value)
+                                        .font(.customfont(font: .Bold, fontSize: 16))
+                                        .foregroundColor(.white)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.black.opacity(0.3))
+                                .cornerRadius(12)
                             }
-                            .maxLeft
-                            .padding()
-                            .font(.customfont(font: .light, fontSize: 14))
-                            .italic()
-                            .foregroundStyle(.white)
-                            .lineSpacing(15)
-                            .shadow(color:.gray,radius: 2,x: 2,y:2)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(22, corner: .allCorners)
-                            
-                          
-//                            .maxLeft
-//                            .padding()
-//                            .font(.customfont(font: .light, fontSize: 14))
-//                            .italic()
-//                            .foregroundStyle(.white)
-//                            .lineSpacing(15)
-//                            .shadow(color:.gray,radius: 2,x: 2,y:2)
-//                            .background(Color.gray.opacity(0.2))
-//                            .cornerRadius(22, corner: .allCorners)
-                        
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(22)
+                        .shadow(color: .gray, radius: 2, x: 2, y: 2)
                     } else {
                         Text("Kullanıcı bilgileri bulunamadı")
                             .foregroundColor(.white)
@@ -74,8 +68,42 @@ struct ProfilSayfasi: View {
                     
                     Divider()
                     
-                    VStack{
-                        Text("Grafikler Eklenecek")
+                    if let kullanici = kullanicilar.first {
+                        let bmiText = ViewModel.calculateBMI(weight: kullanici.ceki, height: kullanici.boy)
+                        let calorieText = ViewModel.calculateDailyCalorieNeed(
+                            weight: kullanici.ceki,
+                            height: kullanici.boy,
+                            age: kullanici.yas,
+                            gender: kullanici.cinsiyet
+                        )
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Beden Kitle İndeksi")
+                                .font(.customfont(font: .medium, fontSize: 12))
+                                .foregroundColor(.gray)
+                            Text(bmiText)
+                                .font(.customfont(font: .Bold, fontSize: 16))
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.3))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Günlük Kalori İhtiyacı")
+                                .font(.customfont(font: .medium, fontSize: 12))
+                                .foregroundColor(.gray)
+                            Text(calorieText)
+                                .font(.customfont(font: .Bold, fontSize: 16))
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.3))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
                     }
                     Spacer()
                 }
@@ -98,7 +126,7 @@ struct ProfilSayfasi: View {
             } message: {
                 Text("Çıkış yapmak istediğinizden emin misiniz?")
             }
-        }
+        }.navigationTitle("Profil sayfasi")
     }
 }
 
