@@ -16,6 +16,8 @@ final class KullanciBilgileri {
     var yas: String
     var cinsiyet: String
     var email: String
+    var bmi: String?
+    var dailyCalorieNeed: String?
     
     init(ad: String, soyad: String, boy: String, ceki: String, yas: String, cinsiyet: String, email: String) {
         self.ad = ad

@@ -134,7 +134,15 @@ struct KayitOl: View {
                         
                         Button {
                             Task {
-                                // SwiftData'ya kaydet
+                                // Önce mevcut kullanıcıları temizle
+                                let descriptor = FetchDescriptor<KullanciBilgileri>()
+                                if let existingUsers = try? modelContext.fetch(descriptor) {
+                                    for user in existingUsers {
+                                        modelContext.delete(user)
+                                    }
+                                }
+                                
+                                // Yeni kullanıcı bilgilerini oluştur
                                 let kullaniciBilgileri = KullanciBilgileri(
                                     ad: viewModel.ad,
                                     soyad: viewModel.soyad,
@@ -144,11 +152,20 @@ struct KayitOl: View {
                                     cinsiyet: viewModel.cinsiyet,
                                     email: viewModel.gmail
                                 )
-                                modelContext.insert(kullaniciBilgileri)
-                                try? modelContext.save()
                                 
-                                // Firebase'e kaydet
-                                viewModel.CreateUser()
+                                // SwiftData'ya kaydet
+                                modelContext.insert(kullaniciBilgileri)
+                                
+                                do {
+                                    try modelContext.save()
+                                    print("Kullanıcı bilgileri başarıyla kaydedildi")
+                                    
+                                    // Firebase'e kaydet
+                                    viewModel.CreateUser()
+                                } catch {
+                                    print("SwiftData kayıt hatası: \(error)")
+                                    viewModel.errorMessage = "Kullanıcı bilgileri kaydedilemedi"
+                                }
                             }
                         } label: {
                             if viewModel.isLoading {

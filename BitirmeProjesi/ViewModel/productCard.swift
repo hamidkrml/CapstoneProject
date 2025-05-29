@@ -12,15 +12,12 @@ struct productCard: View {
     var title : String
     var decription : String = ""
     var body: some View {
-        
-    
-        
         ZStack {
             
-                        HStack(alignment: .center){
+            HStack(alignment: .center){
                 Image(image)
                     .resizable()
-//                    .aspectRatio( contentMode: .fit)
+                //                    .aspectRatio( contentMode: .fit)
                     .frame(width: 70,height: 70)
                     .padding(.all,20)
                 VStack{
@@ -40,7 +37,7 @@ struct productCard: View {
                 Spacer()
             }
             
-                        .background(Color.white.opacity(0.2))
+            .background(Color.white.opacity(0.2))
             .modifier(CardModifier())
             .padding(.all, 20)
         }
@@ -48,5 +45,5 @@ struct productCard: View {
 }
 
 #Preview {
-                        productCard(image: "yemek2", title: "asdsad", decription: "sadasdasdsada")
+    productCard(image: "yemek2", title: "asdsad", decription: "sadasdasdsada")
 }

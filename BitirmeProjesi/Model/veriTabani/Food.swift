@@ -12,6 +12,7 @@ final class Food {
     var sugar: Double
     var fiber: Double
     
+    
     init(name: String, portion: Double, energy: Double, fat: Double, carbohydrate: Double, protein: Double, sugar: Double, fiber: Double) {
         self.name = name
         self.portion = portion

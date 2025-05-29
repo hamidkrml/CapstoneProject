@@ -39,7 +39,7 @@ struct ProfilSayfasi: View {
                             ("Yaş", kullanici.yas),
                             ("Cinsiyet", kullanici.cinsiyet)
                         ]
-
+                        
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                             ForEach(bilgiler, id: \.0) { title, value in
                                 VStack(alignment: .leading, spacing: 4) {
@@ -69,13 +69,8 @@ struct ProfilSayfasi: View {
                     Divider()
                     
                     if let kullanici = kullanicilar.first {
-                        let bmiText = ViewModel.calculateBMI(weight: kullanici.ceki, height: kullanici.boy)
-                        let calorieText = ViewModel.calculateDailyCalorieNeed(
-                            weight: kullanici.ceki,
-                            height: kullanici.boy,
-                            age: kullanici.yas,
-                            gender: kullanici.cinsiyet
-                        )
+                        let bmiText = kullanici.bmi ?? "Hesaplanmamış"
+                        let calorieText = kullanici.dailyCalorieNeed ?? "Hesaplanmamış"
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Beden Kitle İndeksi")
@@ -107,26 +102,26 @@ struct ProfilSayfasi: View {
                     }
                     Spacer()
                 }
-            }
-            .background(
-                ExtractedView.shared
-            )
-            .preferredColorScheme(.dark)
-            .alert("Çıkış Yap", isPresented: $showingLogoutAlert) {
-                Button("İptal", role: .cancel) { }
-                Button("Çıkış Yap", role: .destructive) {
-                    // SwiftData'dan kullanıcı bilgilerini sil
-                    if let kullanici = kullanicilar.first {
-                        modelContext.delete(kullanici)
-                        try? modelContext.save()
+            }.navigationTitle("Profil sayfasi")
+                .background(
+                    ExtractedView.shared
+                )
+                .preferredColorScheme(.dark)
+                .alert("Çıkış Yap", isPresented: $showingLogoutAlert) {
+                    Button("İptal", role: .cancel) { }
+                    Button("Çıkış Yap", role: .destructive) {
+                        // SwiftData'dan kullanıcı bilgilerini sil
+                        if let kullanici = kullanicilar.first {
+                            modelContext.delete(kullanici)
+                            try? modelContext.save()
+                        }
+                        // Firebase'den çıkış yap
+                        LoginFirbase.shared.signout()
                     }
-                    // Firebase'den çıkış yap
-                    LoginFirbase.shared.signout()
+                } message: {
+                    Text("Çıkış yapmak istediğinizden emin misiniz?")
                 }
-            } message: {
-                Text("Çıkış yapmak istediğinizden emin misiniz?")
-            }
-        }.navigationTitle("Profil sayfasi")
+        }
     }
 }
 

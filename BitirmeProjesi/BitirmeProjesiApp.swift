@@ -14,12 +14,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct BitirmeProjesiApp: App {
     let modelContainer: ModelContainer
+    @StateObject private var calorieTracker: CalorieTracker
     
     init() {
         do {
-            modelContainer = try ModelContainer(for: Food.self)
+            // Initialize ModelContainer first
+            let container = try ModelContainer(for: Food.self, SporData.self, KullanciBilgileri.self, DailyNutrition.self)
+            self.modelContainer = container
+            
+            // Create CalorieTracker after ModelContainer is initialized
+            let tracker = CalorieTracker(modelContext: container.mainContext)
+            self._calorieTracker = StateObject(wrappedValue: tracker)
+            
             // Load food data when app starts
-            FoodDataManager.shared.loadFoodData(modelContext: modelContainer.mainContext)
+            FoodDataManager.shared.loadFoodData(modelContext: container.mainContext)
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")
         }
@@ -34,6 +42,7 @@ struct BitirmeProjesiApp: App {
             }
             .modelContext(modelContainer.mainContext)
             .environmentObject(registerViewModel(modelContext: modelContainer.mainContext))
+            .environmentObject(calorieTracker)
         }
         .modelContainer(modelContainer)
     }

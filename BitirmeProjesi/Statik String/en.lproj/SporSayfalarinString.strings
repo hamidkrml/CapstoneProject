@@ -7,23 +7,22 @@
 */
 
 
-
 //                        key = value
- "biceps" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
+"biceps" = "Biceps, kolun ön kısmında yer alan ve kol bükme hareketlerinde görev alan ana kas grubudur. Düzenli çalışıldığında kol gücünü ve kas hacmini artırır. Egzersiz sırasında doğru formda yapılan tekrarlar yapay zeka tarafından sayılır; yanlış formda yapılanlar sayılmaz. Takip için butona tıklayarak AI destekli sayacı kullanabilirsiniz.";
 
 
-"LsagVid" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
+"LsagVid" = "Bu egzersiz, kolun yan kısmındaki kas gruplarını çalıştırır ve üst vücut dengesini geliştirir. Doğru formda yapılan tekrarlar yapay zeka tarafından sayılır, yanlışlar dikkate alınmaz. AI destekli analiz için butona tıklayabilirsiniz.";
 
 
-"LsolVid" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
+"LsolVid" = "Omuz ve kol koordinasyonunu güçlendiren bu egzersiz, kas gelişimi açısından etkilidir. AI, yalnızca doğru formda yapılan tekrarları sayar. Takibi başlatmak için butona tıklayın.";
 
 
-"PressVid" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
-
-
-
-"Squat" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
+"PressVid" = "Göğüs ve triceps kaslarını çalıştıran temel bir egzersizdir. Yapay zeka, yalnızca düzgün yapılan tekrarları algılar. Sayacı başlatmak için butona tıklayın.";
 
 
 
-"StandingVid" = "Kas geliştirme antrenmanlarında genellikle ilk uygulanan egzersizdir. Hormonların uyarılmasını sağlayarak vücudun kas yapmasına yardımcı olur.Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz";
+"Squat" = "Squat, alt vücut kaslarını çalıştıran temel bir egzersizdir. AI, doğru formda yapılan çömelmeleri sayar; hatalı tekrarları dikkate almaz. Takip için butona tıklayın.";
+
+
+
+"StandingVid" = "Bu ayakta yapılan egzersiz, denge ve merkez kas gruplarını çalıştırır. Yapay zeka desteğiyle yalnızca doğru tekrarlar sayılır. Başlamak için butona tıklayın.";
