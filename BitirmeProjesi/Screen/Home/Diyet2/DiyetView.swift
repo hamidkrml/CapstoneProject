@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DiyetView2: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var calorieTracker: CalorieTracker
     
     var body: some View {
         NavigationView {
@@ -23,6 +24,7 @@ struct DiyetView2: View {
                         
                         // Daily calorie tracking section
                         ProductSider()
+                            .environmentObject(calorieTracker)
                         
                         Spacer()
                         

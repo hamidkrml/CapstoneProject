@@ -6,41 +6,51 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ProductSider: View {
     // MARK: - Properties
     @State private var current = 0.0
     @State private var minValue = 0.0
+    @EnvironmentObject var calorieTracker: CalorieTracker
     
-   
     // MARK: - Computed Properties
     
     /// Target calories from user profile or default value
-    var hedefKalori = 200.0
+    @Query private var kullanicilar: [KullanciBilgileri]
+    var hedefKalori: Double {
+        if let kaloriStr = kullanicilar.first?.dailyCalorieNeed,
+           let kalori = Double(kaloriStr) {
+            return kalori
+        }
+        return 200.0
+    }
     
     /// Remaining calories calculation
-    var kalanKalori = 20.0
+    var kalanKalori: Double {
+        hedefKalori - calorieTracker.consumedCalories
+    }
     
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             Text("Kalori Takibi")
+                .font(.title2)
+                .fontWeight(.bold)
             
             // Calorie tracking section
             calorieTrackingSection
-            
-            Spacer()
-            Divider()
+                .padding(.vertical, 8)
             
             // Nutrition information section
             nutritionInfoSection
+                .padding(.vertical, 4)
+            
+            Spacer()
         }
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.2))
-        )
+        .padding(.vertical, 16)
+        .background(Color.white.opacity(0.2))
         .modifier(CardModifier())
-        .padding(.vertical)
     }
     
     // MARK: - UI Components
@@ -50,7 +60,7 @@ struct ProductSider: View {
         HStack(spacing: 20) {
             Spacer()
             
-            calorieInfoView(value: "0", label: "Alinan")
+            calorieInfoView(value: "\(Int(calorieTracker.consumedCalories))", label: "Alınan")
             
             Spacer()
             
@@ -58,7 +68,7 @@ struct ProductSider: View {
             
             Spacer()
             
-            calorieInfoView(value: "0", label: "Alinan")
+            calorieInfoView(value: "\(Int(kalanKalori))", label: "Kalan")
             
             Spacer()
         }
@@ -66,19 +76,20 @@ struct ProductSider: View {
     
     /// Nutrition information section
     private var nutritionInfoSection: some View {
-        HStack(spacing: 60) {
-            nutritionInfoView(label: "KarbonHidrat", value: "0")
-            nutritionInfoView(label: "KarbonHidrat", value: "0")
-            nutritionInfoView(label: "KarbonHidrat", value: "0")
+        HStack(spacing: 40) {
+            nutritionInfoView(label: "Karbonhidrat", value: "\(Int(calorieTracker.consumedCarbs))g")
+            nutritionInfoView(label: "Protein", value: "\(Int(calorieTracker.consumedProtein))g")
+            nutritionInfoView(label: "Yağ", value: "\(Int(calorieTracker.consumedFat))g")
         }
+        .padding(.horizontal)
     }
     
     /// Calorie gauge
     private var calorieGauge: some View {
-        Gauge(value: kalanKalori, in: minValue...hedefKalori) {
+        Gauge(value: calorieTracker.consumedCalories, in: minValue...hedefKalori) {
             // Empty gauge content
         } currentValueLabel: {
-            Text("\(Int(current))")
+            Text("\(Int(calorieTracker.consumedCalories))")
         } minimumValueLabel: {
             Text("\(Int(minValue))")
         } maximumValueLabel: {
@@ -91,7 +102,10 @@ struct ProductSider: View {
     private func calorieInfoView(value: String, label: String) -> some View {
         VStack {
             Text(value)
+                .font(.headline)
             Text(label)
+                .font(.subheadline)
+                .foregroundColor(.gray)
         }
     }
     
@@ -100,7 +114,9 @@ struct ProductSider: View {
         VStack {
             Text(label)
                 .font(.footnote)
+                .foregroundColor(.gray)
             Text(value)
+                .font(.headline)
         }
     }
 }
