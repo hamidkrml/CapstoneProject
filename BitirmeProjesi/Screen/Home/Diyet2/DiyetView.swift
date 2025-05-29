@@ -12,7 +12,7 @@ struct DiyetView2: View {
     @EnvironmentObject var calorieTracker: CalorieTracker
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 ExtractedView.shared
                     .ignoresSafeArea()
@@ -46,6 +46,7 @@ struct DiyetView2: View {
             }
             .navigationTitle("Bugün")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     calendarButton

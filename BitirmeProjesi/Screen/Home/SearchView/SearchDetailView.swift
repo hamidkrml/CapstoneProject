@@ -7,21 +7,27 @@ struct SearchDetailView: View {
     @EnvironmentObject var calorieTracker: CalorieTracker
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                headerSection
-                
-                // Nutritional Information
-                nutritionalInfoSection
-                
-                // Add to Meal Button
-                addToMealButton
+        ZStack {
+            ExtractedView.shared
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    headerSection
+                    
+                    // Nutritional Information
+                    nutritionalInfoSection
+                    
+                    // Add to Meal Button
+                    addToMealButton
+                }
+                .padding()
             }
-            .padding()
         }
         .navigationTitle(food.name)
         .navigationBarTitleDisplayMode(.inline)
+        
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: {
@@ -47,7 +53,14 @@ struct SearchDetailView: View {
             Text("\(Int(food.portion))g Porsiyon")
                 .font(.title3)
                 .fontWeight(.semibold)
+                .foregroundColor(Color("ButtonC"))
         }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.2))
+        )
+        .modifier(CardModifier())
     }
     
     private var nutritionalInfoSection: some View {
@@ -55,6 +68,7 @@ struct SearchDetailView: View {
             Text("Besin Değerleri")
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundColor(Color("ButtonC"))
             
             VStack(spacing: 16) {
                 nutritionalRow(title: "Enerji", value: "\(Int(food.energy))", unit: "kcal", icon: "flame.fill", color: .orange)
@@ -65,8 +79,11 @@ struct SearchDetailView: View {
                 nutritionalRow(title: "Lif", value: "\(Int(food.fiber))", unit: "g", icon: "leaf.fill", color: .mint)
             }
             .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.2))
+            )
+            .modifier(CardModifier())
         }
     }
     
@@ -78,11 +95,13 @@ struct SearchDetailView: View {
             
             Text(title)
                 .font(.system(size: 16, weight: .medium))
+                .foregroundColor(Color("ButtonC"))
             
             Spacer()
             
             Text("\(value) \(unit)")
                 .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(Color("ButtonC"))
         }
     }
     
@@ -100,9 +119,12 @@ struct SearchDetailView: View {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.blue)
-            .cornerRadius(12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.blue)
+            )
         }
+        .modifier(CardModifier())
     }
 }
 

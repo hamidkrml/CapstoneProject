@@ -23,7 +23,7 @@ struct SearchView: View {
     
     // MARK: - Body
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 searchBar
                 
@@ -35,16 +35,19 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Yemekler")
+           
+
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                
-            }
+
+            
             .background(
                 ExtractedView.shared
                     .ignoresSafeArea()
             )
         }
-        .navigationViewStyle(.stack)
+        
+        
+        
     }
     
     // MARK: - UI Components
