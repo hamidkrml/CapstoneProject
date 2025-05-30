@@ -154,6 +154,10 @@ class registerViewModel: ObservableObject {
                 modelContext.insert(kullaniciBilgileri)
                 try modelContext.save()
                 
+                // Kullanıcı bilgilerini UserDefaults'a da kaydet
+                UserDefaults.standard.set(gmail, forKey: "userEmail")
+                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                
                 print("Kullanıcı bilgileri başarıyla kaydedildi:")
                 print("BMI: \(bmiValue)")
                 print("Günlük Kalori İhtiyacı: \(dailyCalorie)")
@@ -166,5 +170,35 @@ class registerViewModel: ObservableObject {
         }
     }
     
+    // Kullanıcı bilgilerini getir
+    func fetchUserData() -> KullanciBilgileri? {
+        let descriptor = FetchDescriptor<KullanciBilgileri>()
+        do {
+            let users = try modelContext.fetch(descriptor)
+            return users.first
+        } catch {
+            print("Kullanıcı bilgileri getirilirken hata: \(error)")
+            return nil
+        }
+    }
     
+    // Kullanıcı bilgilerini güncelle
+    func updateUserData() {
+        guard let user = fetchUserData() else { return }
+        
+        // BMI ve kalori ihtiyacını güncelle
+        user.bmi = calculateBMI(weight: user.ceki, height: user.boy)
+        user.dailyCalorieNeed = calculateDailyCalorieNeed(
+            weight: user.ceki,
+            height: user.boy,
+            age: user.yas,
+            gender: user.cinsiyet
+        )
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Kullanıcı bilgileri güncellenirken hata: \(error)")
+        }
+    }
 }
