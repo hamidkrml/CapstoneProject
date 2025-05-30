@@ -7,72 +7,93 @@
 
 import Foundation
 
-protocol EndPointProtocol{
+protocol EndPointProtocol {
     var baseURL: String { get }
     var path: String { get }
-    var method : HttpMethod { get }
-    var headrs : [String:String]? { get }
-    
+    var method: HttpMethod { get }
+    var headers: [String: String]? { get }
+    var body: Data? { get }
     
     func request() -> URLRequest
 }
 
-
-enum HttpMethod : String{
-    
+enum HttpMethod: String {
     case get = "GET"
     case post = "POST"
     case delete = "DELETE"
     case patch = "PATCH"
-    
 }
 
 /// farkli farkli path icin tanimlayacagiz
-enum EndPoint{
-    case getUsers
+enum EndPoint {
     
+    case generateDietPlan(userData: DietPlanRequest)
 }
 
+struct DietPlanRequest: Codable {
+    let age: Int
+    let weight: Double
+    let height: Double
+    let gender: String
+    let activity_level: String
+    let goal: String
+    let dietary_restrictions: [String]
+}
 
-
-extension EndPoint:EndPointProtocol{
+extension EndPoint: EndPointProtocol {
     var baseURL: String {
-        return "https://valyuta.com"
+        return "https://capstoneprojectagent-1.onrender.com"
     }
     
-    
     var path: String {
-        return "/api/get_currency_list_for_app"
+        switch self {
+        case .generateDietPlan:
+            return "/generate-diet-plan"
+        }
     }
     
     var method: HttpMethod {
         switch self {
-        case .getUsers: return .get
+        case .generateDietPlan:
+            return .post
         
             
         }
     }
     
-    var headrs: [String : String]? {
-//                var header: [String:String] = ["kimlik dogrulama ":"\(token)token burasi olacak"]
-        return nil
+    var headers: [String: String]? {
+        switch self {
+        case .generateDietPlan:
+            return ["Content-Type": "application/json"]
+        }
     }
+    
+    var body: Data? {
+        switch self {
+        case .generateDietPlan(let userData):
+            return try? JSONEncoder().encode(userData)
+        default:
+            return nil
+        }
+    }
+    
     func request() -> URLRequest {
-            guard var commpents = URLComponents(string: baseURL)else{
-                fatalError("url hatalidir")
-            }
-            commpents.path = path
-            var request = URLRequest(url: commpents.url!)
-            request.httpMethod = method.rawValue
-            
-            
-            if let header = headrs{
-                for (key,value) in header{
-                    request.setValue(value, forHTTPHeaderField: key)
-                }
-            }
-            return request
+        guard var components = URLComponents(string: baseURL) else {
+            fatalError("Invalid base URL")
         }
         
+        components.path = path
         
+        guard let url = components.url else {
+            fatalError("Invalid URL components")
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        
+        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        request.httpBody = body
+        
+        return request
     }
+}
