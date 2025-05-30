@@ -8,7 +8,7 @@ struct SporChartView: View {
     
     var exerciseTotals: [(exercise: String, total: Int)] {
         [
-            ("Squat", records.reduce(0) { $0 + ($1.squat1 ?? 0) }),
+            ("Squat", records.reduce(0) { $0 + ($1.squat ?? 0) }),
             ("Biceps", records.reduce(0) { $0 + ($1.biceps ?? 0) }),
             ("Lunge Sol", records.reduce(0) { $0 + ($1.lungeSol ?? 0) }),
             ("Lunge Sag", records.reduce(0) { $0 + ($1.lungeSag ?? 0) }),

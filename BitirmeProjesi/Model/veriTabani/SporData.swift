@@ -3,22 +3,25 @@ import SwiftData
 
 @Model
 final class SporData {
-    var squat1: Int?
-    var biceps: Int?
-    var lungeSol: Int?  // Optional yapıldı
-    var lungeSag: Int?
-    var press: Int?
-    var standing: Int?
+    var date: Date = Date()
+    var squat: Int = 0
+    var biceps: Int = 0
+    var lungeSol: Int = 0
+    var lungeSag: Int = 0
+    var press: Int = 0
+    var standing: Int = 0
 
-    // İlk baştaki hali
-  
-    init(squat: Int? = nil, biceps: Int? = nil, lungeSol: Int? = nil, lungeSag: Int? = nil, press: Int? = nil, standing: Int? = nil) {
-        self.squat1 = squat
+    init(squat: Int = 0, biceps: Int = 0, lungeSol: Int = 0,
+         lungeSag: Int = 0, press: Int = 0, standing: Int = 0) {
+        self.squat = squat
         self.biceps = biceps
         self.lungeSol = lungeSol
         self.lungeSag = lungeSag
         self.press = press
         self.standing = standing
-       
+    }
+    
+    func totalCount() -> Int {
+        return squat + biceps + lungeSol + lungeSag + press + standing
     }
 }

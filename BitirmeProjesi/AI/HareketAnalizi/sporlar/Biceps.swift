@@ -59,7 +59,10 @@ struct BicepsView: View {
                 )
             }
             .onDisappear {
-                verikayit.saveLungeCount( bicepsCount: biceps)
+                VeriKayit.saveExerciseCount(
+                    modelContext: modelContext,
+                    biceps: biceps
+                )
                 QuickPoseManager.shared.stop()
             }
         }

@@ -50,12 +50,14 @@ struct Lungessol: View {
                 )
             }
             .onDisappear {
-                verikayit.saveLungeCount(lungeSolCount: lungeSol)
+                VeriKayit.saveExerciseCount(
+                    modelContext: modelContext,
+                    lungeSol: lungeSol
+                )
                 QuickPoseManager.shared.stop()
-                 // Çıkarken veriyi kaydet
             }
         }
     }
     
-   
-    }
+    
+}

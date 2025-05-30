@@ -12,7 +12,7 @@ import QuickPoseSwiftUI
 
 struct Lungessag : View {
   
-    
+    @Environment(\.modelContext) var modelContext // SwiftData Context
     @State private var feedbackText: String? = nil
     @State var overlayImag: UIImage?
     @State private var counter = QuickPoseThresholdCounter()
@@ -53,8 +53,11 @@ struct Lungessag : View {
                     
                     
                 })
-            }.onDisappear{
-                verikayit.saveLungeCount(lungeSagCount: lungessag)
+            }.onDisappear {
+                VeriKayit.saveExerciseCount(
+                    modelContext: modelContext,
+                    lungeSag: lungessag
+                )
                 QuickPoseManager.shared.stop()
             }
         }

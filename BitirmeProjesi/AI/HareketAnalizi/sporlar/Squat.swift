@@ -6,6 +6,8 @@ import QuickPoseSwiftUI
 
 
 struct SquatView: View {
+    @Environment(\.modelContext) var modelContext // SwiftData Context
+
 @State var squatCounter = QuickPoseThresholdCounter()
 @State var overlayImage: UIImage?
 @State var count: String? = nil
@@ -56,8 +58,11 @@ var body: some View {
         
         
         
-        .onDisappear{
-            verikayit.saveLungeCount(squatCount: squatt)
+        .onDisappear {
+            VeriKayit.saveExerciseCount(
+                modelContext: modelContext,
+               squat: squatt
+            )
             QuickPoseManager.shared.stop()
         }
         

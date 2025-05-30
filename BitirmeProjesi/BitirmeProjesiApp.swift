@@ -10,26 +10,29 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     return true
   }
 }
-
 @main
 struct BitirmeProjesiApp: App {
     let modelContainer: ModelContainer
-    @StateObject private var calorieTracker: CalorieTracker
+    let calorieTracker: CalorieTracker
     
     init() {
         do {
-            // Initialize ModelContainer first
-            let container = try ModelContainer(for: Food.self, SporData.self, KullanciBilgileri.self, DailyNutrition.self)
-            self.modelContainer = container
+            let schema = Schema([
+                Food.self,
+                SporData.self,
+                KullanciBilgileri.self,
+                DailyNutrition.self
+            ])
             
-            // Create CalorieTracker after ModelContainer is initialized
-            let tracker = CalorieTracker(modelContext: container.mainContext)
-            self._calorieTracker = StateObject(wrappedValue: tracker)
+            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
             
-            // Load food data when app starts
-            FoodDataManager.shared.loadFoodData(modelContext: container.mainContext)
+            calorieTracker = CalorieTracker(modelContext: modelContainer.mainContext)
+            
+            // Food verilerini yükle
+            FoodDataManager.shared.loadFoodData(modelContext: modelContainer.mainContext)
         } catch {
-            fatalError("Could not initialize ModelContainer: \(error)")
+            fatalError("ModelContainer oluşturulamadı: \(error)")
         }
     }
     

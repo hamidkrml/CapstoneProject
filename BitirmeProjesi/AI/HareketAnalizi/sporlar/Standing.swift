@@ -11,7 +11,8 @@ import QuickPoseSwiftUI
 
 
 struct Standing: View {
-    
+    @Environment(\.modelContext) var modelContext // SwiftData Context
+
     @State var over: UIImage?
     @State var scale = 1.0
     @State private var coun = QuickPoseThresholdCounter()
@@ -60,8 +61,11 @@ struct Standing: View {
              
              
              
-             .onDisappear{
-                 verikayit.saveLungeCount(stadingCount: standin)
+             .onDisappear {
+                 VeriKayit.saveExerciseCount(
+                     modelContext: modelContext,
+                     standing: standin
+                 )
                  QuickPoseManager.shared.stop()
              }
             

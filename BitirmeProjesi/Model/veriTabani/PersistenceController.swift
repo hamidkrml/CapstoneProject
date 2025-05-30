@@ -1,44 +1,57 @@
 import SwiftData
+import Foundation
 
 @MainActor
-struct verikayit {
+struct VeriKayit {
+    static let shared = VeriKayit()
     
-    static let container: ModelContainer = {
-        do {
-            return try ModelContainer(for: SporData.self)
-        } catch {
-            fatalError("ModelContainer oluşturulamadı: \(error)")
+    private init() {}
+    
+    static func getCurrentWorkoutSession(modelContext: ModelContext) -> SporData {
+        // Bugünkü tarihle kayıt var mı kontrol et
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+
+        let descriptor = FetchDescriptor<SporData>(
+            predicate: #Predicate { workout in
+                workout.date >= today && workout.date < tomorrow
+            }
+        )
+        
+        if let existingWorkout = try? modelContext.fetch(descriptor).first {
+            return existingWorkout
         }
-    }()
-    
-    
-    static var modelContext: ModelContext {
-        container.mainContext
+        
+        // Yeni kayıt oluştur
+        let newWorkout = SporData()
+        modelContext.insert(newWorkout)
+        return newWorkout
     }
     
-    static func saveLungeCount( lungeSolCount: Int = 0, bicepsCount:Int = 0,squatCount:Int = 0,lungeSagCount:Int = 0,stadingCount:Int = 0,pressCount:Int = 0 ) {
-        let newlung = SporData(lungeSol: lungeSolCount)
-        let newbicep = SporData(biceps: bicepsCount)
-        let newsquat = SporData(squat: squatCount)
-        let newlungS = SporData(lungeSag: lungeSagCount)
-        let newstading = SporData(standing: stadingCount)
-        let newpress = SporData(press: pressCount)
-        modelContext.insert(newbicep)
-        modelContext.insert(newlung)
-        modelContext.insert(newsquat)
-        modelContext.insert(newlungS)
-        modelContext.insert(newstading)
-        modelContext.insert(newpress)
+    static func saveExerciseCount(
+        modelContext: ModelContext,
+        squat: Int? = nil,
+        biceps: Int? = nil,
+        lungeSol: Int? = nil,
+        lungeSag: Int? = nil,
+        press: Int? = nil,
+        standing: Int? = nil
+    ) {
+        let currentWorkout = getCurrentWorkoutSession(modelContext: modelContext)
+        
+        if let squat = squat { currentWorkout.squat += squat }
+        if let biceps = biceps { currentWorkout.biceps += biceps }
+        if let lungeSol = lungeSol { currentWorkout.lungeSol += lungeSol }
+        if let lungeSag = lungeSag { currentWorkout.lungeSag += lungeSag }
+        if let press = press { currentWorkout.press += press }
+        if let standing = standing { currentWorkout.standing += standing }
         
         do {
             try modelContext.save()
-//            print("Lunge Sol Sayısı Kaydedildi: \(lungeSolCount), Biceps Sayısı Kaydedildi: \(bicepsCount): Squat Sayısı Kaydedildi: \(squatCount), Lunge Sağ Sayısı Kaydedildi: \(lungeSagCount), Stading Sayısı Kaydedildi: \(stadingCount), Press Sayısı Kaydedildi: \(pressCount)")
-//            
-            
+            print("✅ Egzersiz verileri güncellendi")
         } catch {
-            print("Hata: Veri kaydedilemedi! \(error.localizedDescription)")
+            print("❌ Veri kaydetme hatası: \(error)")
         }
     }
-    
-    
 }

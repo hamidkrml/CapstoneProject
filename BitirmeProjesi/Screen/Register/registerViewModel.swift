@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import FirebaseAuth
 
 @MainActor
 class registerViewModel: ObservableObject {
@@ -45,12 +46,16 @@ class registerViewModel: ObservableObject {
     }
     
     func validateHeight() -> Bool {
-        guard let height = Double(boy) else { return false }
+        // Ondalık ayırıcı kontrolü (Türkçe için)
+        let sanitizedBoy = boy.replacingOccurrences(of: ",", with: ".")
+        guard let height = Double(sanitizedBoy) else { return false }
         return height > 0 && height < 300
     }
     
     func validateWeight() -> Bool {
-        guard let weight = Double(ceki) else { return false }
+        // Ondalık ayırıcı kontrolü (Türkçe için)
+        let sanitizedCeki = ceki.replacingOccurrences(of: ",", with: ".")
+        guard let weight = Double(sanitizedCeki) else { return false }
         return weight > 0 && weight < 500
     }
     
@@ -60,24 +65,41 @@ class registerViewModel: ObservableObject {
     }
     
     func calculateBMI(weight: String, height: String) -> String {
-        guard let w = Double(weight), let h = Double(height) else { return "N/A" }
+        // Ondalık ayırıcı düzeltme
+        let sanitizedWeight = weight.replacingOccurrences(of: ",", with: ".")
+        let sanitizedHeight = height.replacingOccurrences(of: ",", with: ".")
+        
+        guard let w = Double(sanitizedWeight),
+              let h = Double(sanitizedHeight) else { return "N/A" }
+        
         let heightInMeters = h / 100
         let bmi = w / (heightInMeters * heightInMeters)
         return String(format: "%.1f", bmi)
     }
 
     func calculateDailyCalorieNeed(weight: String, height: String, age: String, gender: String) -> String {
-        guard let w = Double(weight), let h = Double(height), let a = Double(age) else { return "N/A" }
+        // Ondalık ayırıcı düzeltme
+        let sanitizedWeight = weight.replacingOccurrences(of: ",", with: ".")
+        let sanitizedHeight = height.replacingOccurrences(of: ",", with: ".")
+        
+        guard let w = Double(sanitizedWeight),
+              let h = Double(sanitizedHeight),
+              let a = Int(age) else { return "N/A" }
+        
         let bmr: Double
         if gender == "Erkek" {
-            bmr = 10 * w + 6.25 * h - 5 * a + 5
+            bmr = 10 * w + 6.25 * h - 5 * Double(a) + 5
         } else {
-            bmr = 10 * w + 6.25 * h - 5 * a - 161
+            bmr = 10 * w + 6.25 * h - 5 * Double(a) - 161
         }
-        return String(format: "%.0f", bmr)
+        
+        // Aktivite faktörü ekle (örneğin 1.2 = hareketsiz)
+        let dailyCalorie = bmr * 1.2
+        return String(format: "%.0f", dailyCalorie)
     }
     
     func CreateUser() {
+        // 1. Validasyon kontrolleri
         guard isValid else {
             errorMessage = "Lütfen tüm alanları doldurun"
             return
@@ -94,26 +116,26 @@ class registerViewModel: ObservableObject {
         }
         
         guard validateHeight() else {
-            errorMessage = "Geçerli bir boy değeri giriniz"
+            errorMessage = "Geçerli bir boy değeri giriniz (0-300 cm)"
             return
         }
         
         guard validateWeight() else {
-            errorMessage = "Geçerli bir kilo değeri giriniz"
+            errorMessage = "Geçerli bir kilo değeri giriniz (0-500 kg)"
             return
         }
         
         guard validateAge() else {
-            errorMessage = "Geçerli bir yaş değeri giriniz"
+            errorMessage = "Geçerli bir yaş değeri giriniz (1-119)"
             return
         }
         
         isLoading = true
         errorMessage = ""
         
-        Task { @MainActor in
+        Task {
             do {
-                // Firebase'e kayıt
+                // 2. Firebase kaydı
                 try await LoginFirbase.shared.createUser(
                     email: gmail,
                     password: Sifre,
@@ -123,50 +145,69 @@ class registerViewModel: ObservableObject {
                     Ksoyad: soyad
                 )
                 
-                // BMI ve günlük kalori ihtiyacını hesapla
+                // 3. BMI ve kalori hesaplama
                 let bmiValue = calculateBMI(weight: ceki, height: boy)
-                let dailyCalorie = calculateDailyCalorieNeed(weight: ceki, height: boy, age: yas, gender: cinsiyet)
-                
-                // SwiftData'ya kayıt
-                let kullaniciBilgileri = KullanciBilgileri(
-                    ad: ad,
-                    soyad: soyad,
-                    boy: boy,
-                    ceki: ceki,
-                    yas: yas,
-                    cinsiyet: cinsiyet,
-                    email: gmail
+                let dailyCalorie = calculateDailyCalorieNeed(
+                    weight: ceki,
+                    height: boy,
+                    age: yas,
+                    gender: cinsiyet
                 )
                 
-                // Hesaplanan değerleri kaydet
-                kullaniciBilgileri.bmi = bmiValue
-                kullaniciBilgileri.dailyCalorieNeed = dailyCalorie
-                
-                // Önceki kullanıcı bilgilerini temizle
-                let descriptor = FetchDescriptor<KullanciBilgileri>()
-                if let existingUsers = try? modelContext.fetch(descriptor) {
-                    for user in existingUsers {
-                        modelContext.delete(user)
+                // 4. SwiftData işlemleri (Main thread'de)
+                await MainActor.run {
+                    do {
+                        // Önceki kullanıcıları temizle
+                        let descriptor = FetchDescriptor<KullanciBilgileri>()
+                        let existingUsers = try modelContext.fetch(descriptor)
+                        
+                        for user in existingUsers {
+                            modelContext.delete(user)
+                        }
+                        
+                        // Yeni kullanıcı oluştur
+                        let newUser = KullanciBilgileri(
+                            ad: self.ad,
+                            soyad: self.soyad,
+                            boy: self.boy,
+                            ceki: self.ceki,
+                            yas: self.yas,
+                            cinsiyet: self.cinsiyet,
+                            email: self.gmail
+                        )
+                        
+                        newUser.bmi = bmiValue
+                        newUser.dailyCalorieNeed = dailyCalorie
+                        
+                        modelContext.insert(newUser)
+                        
+                        // Veriyi kalıcı olarak kaydet
+                        try modelContext.save()
+                        
+                        // 5. Kullanıcı oturum bilgilerini kaydet
+                        UserDefaults.standard.set(self.gmail, forKey: "userEmail")
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                        
+                        print("✅ Kullanıcı başarıyla kaydedildi")
+                        print("BMI: \(bmiValue)")
+                        print("Günlük Kalori: \(dailyCalorie)")
+                        
+                    } catch {
+                        print("❌ SwiftData kayıt hatası: \(error)")
+                        self.errorMessage = "Veritabanı hatası: \(error.localizedDescription)"
                     }
                 }
                 
-                // Yeni kullanıcı bilgilerini kaydet
-                modelContext.insert(kullaniciBilgileri)
-                try modelContext.save()
-                
-                // Kullanıcı bilgilerini UserDefaults'a da kaydet
-                UserDefaults.standard.set(gmail, forKey: "userEmail")
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                
-                print("Kullanıcı bilgileri başarıyla kaydedildi:")
-                print("BMI: \(bmiValue)")
-                print("Günlük Kalori İhtiyacı: \(dailyCalorie)")
-                
-            } catch {
-                errorMessage = error.localizedDescription
-                print("Kayıt hatası: \(error.localizedDescription)")
+            } catch let firebaseError {
+                await MainActor.run {
+                    print("❌ Firebase kayıt hatası: \(firebaseError)")
+                    self.errorMessage = "Kayıt hatası: \(firebaseError.localizedDescription)"
+                }
             }
-            isLoading = false
+            
+            await MainActor.run {
+                self.isLoading = false
+            }
         }
     }
     
@@ -197,8 +238,9 @@ class registerViewModel: ObservableObject {
         
         do {
             try modelContext.save()
+            print("✅ Kullanıcı bilgileri güncellendi")
         } catch {
-            print("Kullanıcı bilgileri güncellenirken hata: \(error)")
+            print("❌ Güncelleme hatası: \(error)")
         }
     }
 }
