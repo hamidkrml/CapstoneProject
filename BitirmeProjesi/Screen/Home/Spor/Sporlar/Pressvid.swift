@@ -6,7 +6,7 @@ struct Pressvid: View {
     @State var Press1 = false
     var body: some View {
         VStack(spacing:10){
-            VideoPlayerToplu(videoad: "squatVideo")
+            VideoPlayerToplu(videoad: "presvid")
             
             Divider()
             Spacer()
@@ -16,7 +16,10 @@ struct Pressvid: View {
                 Text("Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz")
             }
             
-            
+            .font(.title3)
+            .fontWeight(.semibold)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
             
             
             Spacer()

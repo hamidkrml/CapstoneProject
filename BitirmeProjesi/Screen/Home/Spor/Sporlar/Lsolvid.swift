@@ -12,7 +12,7 @@ struct Lsolvid: View {
     @State var sol = false
     var body: some View {
         VStack(spacing:10){
-            VideoPlayerToplu(videoad: "squatVideo")
+            VideoPlayerToplu(videoad: "lsag")
             
             Divider()
             Spacer()
@@ -22,7 +22,10 @@ struct Lsolvid: View {
                 Text("Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz")
             }
             
-            
+            .font(.title3)
+            .fontWeight(.semibold)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
             
             
             Spacer()

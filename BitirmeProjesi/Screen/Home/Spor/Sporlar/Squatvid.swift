@@ -13,7 +13,10 @@ struct Squatvid: View {
                 
                 Text("Eger dogru Yapip yapmadiginizi Kontrol etmek istiyorsanizsa button tiklayarak AI ozeligili ile kactene yapa biliyosunuz deye kontrol ede bilirsinz")
             }
-            
+            .font(.title3)
+            .fontWeight(.semibold)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
             
 //            .onAppear{
 //                NetworkMeneger.shared.getuser{ result in
