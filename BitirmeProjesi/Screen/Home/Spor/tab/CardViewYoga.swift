@@ -8,8 +8,34 @@
 import SwiftUI
 
 struct CardViewYoga: View {
+     //
+    @State var bicep = false
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        VStack(spacing:10){
+            Spacer()
+            VideoPlayerToplu(videoad: "yoga")
+            
+            Divider()
+            
+            VStack(spacing:20){
+                Text(SporSayfalarinString.Yoga.localizede())
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                
+            }
+            Spacer()
+     
+        }
+        .frame(maxWidth: .infinity)
+        .background(
+            ExtractedView.shared
+        )
+        .preferredColorScheme(.dark)
     }
 }
 
