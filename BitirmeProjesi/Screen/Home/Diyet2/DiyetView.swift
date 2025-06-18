@@ -11,7 +11,7 @@ struct DiyetView2: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject var calorieTracker: CalorieTracker
     @State private var showAssistant = false
-    @State private var dietPlan: String = ""
+    @State private var dietPlan: DietPlan? = nil
     @State private var isLoading: Bool = false
     @State private var errorMessage: String = ""
     
@@ -90,65 +90,62 @@ struct DiyetView2: View {
                 ExtractedView.shared
                     .ignoresSafeArea()
                 
-                ScrollView {
-                    VStack(spacing: 20) {
-                        if isLoading {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                                .padding()
-                        } else if !errorMessage.isEmpty {
-                            VStack(spacing: 16) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .font(.system(size: 50))
-                                    .foregroundColor(.red)
-                                
-                                Text(errorMessage)
-                                    .foregroundColor(.red)
-                                    .multilineTextAlignment(.center)
-                                
-                                Button("Tekrar Dene") {
-                                    loadDietPlan()
-                                }
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(10)
-                            }
-                            .padding()
-                        } else if !dietPlan.isEmpty {
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("Kişisel Diyet Planınız")
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color("ButtonC"))
-                                
-                                Text(dietPlan)
-                                    .foregroundColor(Color("ButtonC"))
-                                    .lineSpacing(4)
-                                
-                                Button(action: {
-                                    loadDietPlan()
-                                }) {
-                                    HStack {
-                                        Image(systemName: "arrow.clockwise")
-                                        Text("Yeni Plan Oluştur")
+                VStack(spacing: 0) {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            if isLoading {
+                                ProgressView()
+                                    .scaleEffect(1.5)
+                                    .padding()
+                            } else if !errorMessage.isEmpty {
+                                VStack(spacing: 16) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .font(.system(size: 50))
+                                        .foregroundColor(.red)
+                                    
+                                    Text(errorMessage)
+                                        .foregroundColor(.red)
+                                        .multilineTextAlignment(.center)
+                                    
+                                    Button("Tekrar Dene") {
+                                        loadDietPlan()
                                     }
                                     .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.blue)
                                     .cornerRadius(10)
                                 }
+                                .padding()
+                            } else if let plan = dietPlan {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    DietPlanView(dietPlan: plan)
+                                }
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.white.opacity(0.2))
+                                )
+                                .modifier(CardModifier())
                             }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.white.opacity(0.2))
-                            )
-                            .modifier(CardModifier())
+                        }
+                        .padding()
+                    }
+                    if dietPlan != nil && !isLoading && errorMessage.isEmpty {
+                        Button(action: {
+                            loadDietPlan()
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                Text("Yeni Plan Oluştur")
+                                
+                            }
+                            .foregroundColor(.btPrimaryApp)
+                            .frame(width: 200, height: 40)
+                            .background(Color.primaryApp)
+                            .cornerRadius(25)
+                            .padding(.bottom, .bottomInsets + 16)
                         }
                     }
-                    .padding()
                 }
             }
             .navigationTitle("Yapay Zeka Asistanı")
@@ -169,7 +166,9 @@ struct DiyetView2: View {
         
         Task {
             do {
-                dietPlan = try await NetworkMeneger.shared.generateDietPlanFromUserData(modelContext: modelContext)
+                let data = try await NetworkMeneger.shared.generateDietPlanDataFromUserData(modelContext: modelContext)
+                let plan = try JSONDecoder().decode(DietPlan.self, from: data)
+                dietPlan = plan
             } catch {
                 errorMessage = "Diyet planı oluşturulurken bir hata oluştu: \(error.localizedDescription)"
             }
